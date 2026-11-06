@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: coin_pulse
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d coin_pulse"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  liquibase:
+    image: liquibase/liquibase:4.31.1
+    container_name: liquibase
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src/main/resources:/liquibase/changelog:ro
+    command:
+      - --logLevel=INFO
+      - --searchPath=/liquibase/changelog
+      - --changeLogFile=db.changelog.db/master-changelog.yaml
+      - --url=jdbc:postgresql://postgres:5432/coin_pulse
+      - --username=postgres
+      - --password=postgres
+      - update
+
+  app:
+    build: .
+    container_name: coin-pulse
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/coin_pulse
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      BINANCE_POLL_INTERVAL: PT30S
+      BINANCE_SYMBOLS: BNBUSDT,BTCUSDT,ETHUSDT
+      BINANCE_BASE_URL: https://api.binance.com
+
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres-data:

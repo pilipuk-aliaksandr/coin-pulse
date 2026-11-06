@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: "create_schema_budgets"
+      author: "shurapilipuk@gmail.com"
+      comments: "Create coins schema"
+      changes:
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS coins;

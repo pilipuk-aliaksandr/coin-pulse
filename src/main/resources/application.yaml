@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        type:
+          json_format_mapper: jackson
+
+  liquibase:
+    enabled: false
+    change-log: classpath:db.changelog.db/master-changelog.yaml
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+binance:
+  base-url: ${BINANCE_BASE_URL}
+  symbols: ${BINANCE_SYMBOLS}
+  poll-interval: ${BINANCE_POLL_INTERVAL}
+  connect-timeout: PT3S
+  read-timeout: PT5S
+  rate-limit-backoff: PT1M

@@ -1,0 +1,749 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Checkstyle configuration that checks the Google coding conventions from Google Java Style
+    that can be found at https://google.github.io/styleguide/javaguide.html.
+
+    Also, you should read the documentation at http://checkstyle.org
+
+    To completely disable a check, just comment it in this file.
+    To suppress certain violations please review suppression filters.
+ -->
+
+<module name="Checker">
+
+    <property name="charset" value="UTF-8"/>
+
+    <!-- If the rules are not met, the check will fail with errors. -->
+    <property name="severity" value="${org.checkstyle.google.severity}" default="error"/>
+
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <module name="SuppressWarningsFilter"/>
+
+    <!-- https://checkstyle.org/filters/suppressionfilter.html -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/checkstyle-suppressions.xml"
+                  default="checkstyle-suppressions.xml"/>
+        <property name="optional" value="true"/>
+    </module>
+
+    <!-- Allows for the targeted disabling (suppression) of Checkstyle rules. But be better to use @SupressWarnings -->
+    <module name="SuppressWithNearbyTextFilter">
+        <property name="nearbyTextPattern"
+                  value="CHECKSTYLE.SUPPRESS\: (\w+) for ([+-]\d+) lines"/>
+        <property name="checkPattern" value="$1"/>
+        <property name="lineRange" value="$2"/>
+    </module>
+
+    <!-- Forbids any Tabs in the code -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <!-- Forbids the whitespaces or tab characters in the end of lines -->
+    <module name="RegexpSingleline">
+        <property name="id" value="noTrailingWhitespace"/>
+        <property name="format" value="\s+$"/>
+        <property name="minimum" value="0"/>
+        <property name="maximum" value="0"/>
+        <property name="message" value="Trailing whitespace is not allowed"/>
+    </module>
+
+    <!-- Limits the maximum length of a single java-file -->
+    <module name="FileLength">
+        <property name="max" value="2000"/>
+    </module>
+
+    <!-- Limits the maximum length of a single line of java-code -->
+    <module name="LineLength">
+        <property name="fileExtensions" value="java"/>
+        <property name="max" value="120"/>
+        <property name="ignorePattern"
+                  value="^package.*|^import.*|href\s*=\s*&quot;[^&quot;]*&quot;|http://|https://|ftp://"/>
+    </module>
+
+    <!--  Suppression to prevent LineLength Check and Indentation Check in Text-blocks (""" ... """) -->
+    <module name="SuppressWithPlainTextCommentFilter">
+        <property name="checkFormat" value="LineLength"/>
+        <property name="offCommentFormat" value='^.*"""\s*$'/>
+        <property name="onCommentFormat" value='^\s*"""\s*(?:[,;]|.+)$'/>
+    </module>
+    <module name="SuppressWithPlainTextCommentFilter">
+        <property name="checkFormat" value="\.IndentationCheck$"/>
+        <property name="offCommentFormat" value='^""".?'/>
+        <property name="onCommentFormat" value='.'/>
+    </module>
+
+    <!-- Checks that every file ends with an empty line -->
+    <module name="NewlineAtEndOfFile"/>
+
+    <module name="TreeWalker">
+
+        <!-- Forbids declaring multiple top-level classes in a single file -->
+        <module name="OneTopLevelClass"/>
+
+        <!-- Verifies that the Filename matches the top-level Classname exactly -->
+        <module name="OuterTypeFilename"/>
+
+        <!-- Verifies mandatory inclusion of a package declaration -> package com.example.myproject; -->
+        <module name="PackageDeclaration"/>
+
+        <!-- Checks the order of modifiers:
+        1. Access modifiers (public, protected, private)
+        2. Abstract/default status (abstract, default)
+        3. Static status (static)
+        4. Sealed status (sealed, non-sealed in newer Java versions)
+        5. Immutability (final)
+        6. Thread safety/serialization (transient, volatile)
+        7. Synchronization (synchronized)
+        8. Native methods and calculation precision (native, strictfp) -->
+        <module name="ModifierOrder"/>
+
+        <!-- Verifies that if `equals()` is overridden, then `hashCode()` must also be overridden (and vice versa) -->
+        <module name="EqualsHashCode"/>
+
+        <!-- Requires writing "literal".equals(variable) instead of variable.equals("literal") to avoid encountering a NullPointerException -->
+        <module name="EqualsAvoidNull"/>
+
+        <!-- Forbids comparing strings using == instead of .equals() -->
+        <module name="StringLiteralEquality"/>
+
+        <!-- It forbids assignment within expressions such as `if ((x = compute()) != null)` -->
+        <module name="InnerAssignment"/>
+
+        <!-- Prohibits modification of the loop variable within the body of a for/foreach loop -->
+        <module name="ModifiedControlVariable"/>
+
+        <!-- Limits the maximum physical length of a method (including comments and whitespace) -->
+        <module name="MethodLength">
+            <property name="max" value="175"/>
+        </module>
+
+        <!-- Limits the maximum number of parameters for a method or constructor. -->
+<!--        <module name="ParameterNumber">-->
+<!--            <property name="max" value="7"/>-->
+<!--            <property name="ignoreOverriddenMethods" value="true"/>-->
+<!--        </module>-->
+
+        <!-- Limits the number of linearly independent paths through a method (all `if`, `else`, `for`, `while`, `case`, `catch` statements, etc.) -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
+
+        <!-- Limits cyclomatic complexity by calculating branches combinatorially (via multiplication) -->
+        <module name="NPathComplexity">
+            <property name="max" value="200"/>
+        </module>
+
+        <!-- Limits the number of executable lines of code in a method, excluding comments and empty lines -->
+        <module name="JavaNCSS">
+            <property name="methodMaximum" value="50"/>
+        </module>
+
+        <!-- Forbids any invisible or non-standard whitespace characters in the code -->
+        <module name="IllegalTokenText">
+            <property name="id" value="whitespaceCharactersMustBeEscaped"/>
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL, TEXT_BLOCK_CONTENT"/>
+            <property name="format"
+                      value="[\u0009\u000B\u000C\u0085\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]"/>
+            <property name="message"
+                      value="Whitespace other than the ASCII space must be escaped."/>
+        </module>
+
+        <!-- Forbids to use the Unicode escaping, such as \u0009 -->
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL, TEXT_BLOCK_CONTENT"/>
+            <property name="format"
+                      value="\\u00(08|09|0(a|A)|0(c|C)|0(d|D)|20|22|27|5(C|c))|\\(0(10|11|12|14|15|40|42|47)|134)"/>
+            <property name="message"
+                      value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
+        </module>
+        <module name="AvoidEscapedUnicodeCharacters">
+            <property name="allowEscapesForControlCharacters" value="true"/>
+            <property name="allowByTailComment" value="true"/>
+            <property name="allowNonPrintableEscapes" value="true"/>
+        </module>
+
+        <!-- Checks the order of directives in the module-info.java file in modular projects.
+        Should be: requires -> exports -> opens -> uses -> provides -->
+        <module name="ModuleDirectiveOrder"/>
+
+        <!-- Forbids Java 21+ unnamed/implicit classes (compact source files) -->
+        <module name="MatchXpath">
+            <property name="id" value="CompactSourceFileNotAllowed"/>
+            <property name="query" value="/COMPACT_COMPILATION_UNIT"/>
+            <message key="matchxpath.match" value="Compact source file is not allowed."/>
+        </module>
+
+        <!-- Forbids .* in importing classes or packages -->
+        <module name="AvoidStarImport"/>
+
+        <!-- Forbids the importing of entire modules -->
+        <module name="AvoidModuleImport"/>
+
+        <!-- Forbids line breaks in imports -->
+        <module name="NoLineWrap">
+            <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
+        </module>
+
+        <!-- Checks for unused imports in the code and Javadoc -->
+        <module name="UnusedImports">
+            <property name="processJavadoc" value="true"/>
+        </module>
+
+        <!-- Checks for redundant imports in the code and Javadoc -->
+        <module name="RedundantImport"/>
+
+        <!-- Forbids the import from `sun.*` - a safeguard against the use of undocumented/unstable internal JDK APIs -->
+        <module name="IllegalImport"/>
+
+        <!-- Ensures that all imports within each individual group are strictly sorted in alphabetical order (from A to Z) -->
+        <!--        <module name="CustomImportOrder">-->
+        <!--            <property name="sortImportsInGroupAlphabetically" value="true"/>-->
+        <!--            <property name="separateLineBetweenGroups" value="true"/>-->
+        <!--            <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>-->
+        <!--        </module>-->
+
+        <!-- Checks the mandatory usage of curly braces { } in IF, ELSE, WHILE etc. -->
+        <module name="NeedBraces">
+            <property name="tokens"
+                      value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
+        </module>
+
+        <!-- Checks that the opening curly brace "{" is on the same code-line (except switch-case) -->
+        <module name="LeftCurly">
+            <property name="id" value="LeftCurlyEol"/>
+            <property name="tokens"
+                      value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LAMBDA,
+                      LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH,
+                      LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF, OBJBLOCK, STATIC_INIT, RECORD_DEF,
+                      COMPACT_CTOR_DEF, SWITCH_RULE"/>
+        </module>
+
+        <!-- Checks that the opening curly brace "{" in switch-case is NOT on the same code-line -->
+        <module name="LeftCurly">
+            <property name="id" value="LeftCurlyNl"/>
+            <property name="option" value="nl"/>
+            <property name="tokens"
+                      value="LITERAL_CASE, LITERAL_DEFAULT"/>
+        </module>
+
+        <!-- Verifies the correct syntax in switch-case with lambda-expressions (case MONDAY -> { ... }) -->
+        <module name="SuppressionXpathSingleFilter">
+            <property name="id" value="LeftCurlyNl"/>
+            <property name="query" value="//SWITCH_RULE/SLIST"/>
+        </module>
+
+        <!-- Checks that every switch statement must include a default branch -->
+        <module name="MissingSwitchDefault"/>
+
+        <!-- Checks that default branch in switch statement is the last line -->
+        <module name="DefaultComesLast"/>
+
+        <!-- Checks each case in switch-case and requires that it either ends with an exit statement "break;" -->
+        <module name="FallThrough"/>
+
+        <!-- Forbids spaces before `case:` and `default:` in switch-case blocks -->
+        <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+
+        <!-- Checks that a closing brace "}" is placed on its own line if it closes a code-block.
+        In if-else or try-catch, the closing brace "}" and keyword "else" or "catch" must appear on the same line -->
+        <module name="GoogleRightCurly"/>
+
+        <!-- Requires a space immediately after certain punctuation marks and functional elements -->
+        <module name="WhitespaceAfter">
+            <property name="tokens"
+                      value="COMMA, SEMI, TYPECAST, ELLIPSIS, LITERAL_YIELD, LITERAL_CASE, ANNOTATIONS,
+                      SINGLE_LINE_COMMENT"/>
+        </module>
+
+        <!-- Checks that there are always spaces around operators, assignment signs, keywords, and curly braces. -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <property name="allowEmptySwitchBlockStatements" value="true"/>
+            <property name="ignoreEnhancedForColon" value="false"/>
+            <property name="tokens"
+                      value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN, COLON, DIV,
+                      DIV_ASSIGN, DO_WHILE, EQUAL, GE, GT, LAMBDA, LAND, LCURLY, LE, LITERAL_CATCH, LITERAL_DO,
+                      LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SWITCH,
+                      LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN,
+                      NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR,
+                      STAR_ASSIGN, LITERAL_ASSERT, TYPE_EXTENSION_AND, LITERAL_WHEN"/>
+            <message key="ws.notFollowed"
+                     value="WhitespaceAround: ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
+        </module>
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="WhitespaceAround"/>
+            <property name="query" value="//SLIST[count(./*)=1]| //SLIST[count(./*)=1]/RCURLY"/>
+        </module>
+        <module name="WhitespaceBeforeEmptyBody">
+            <property name="tokens"
+                      value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF, CLASS_DEF, INTERFACE_DEF,
+                   RECORD_DEF, ENUM_DEF, ANNOTATION_DEF, LITERAL_NEW, LITERAL_DO, LITERAL_WHILE,
+                   LITERAL_FOR, LITERAL_IF, LITERAL_ELSE, STATIC_INIT, LITERAL_TRY, LITERAL_CATCH,
+                   LITERAL_FINALLY, LITERAL_SYNCHRONIZED, LITERAL_SWITCH, LAMBDA"/>
+        </module>
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="WhitespaceBeforeEmptyBody"/>
+            <property name="query"
+                      value="//*[self::SLIST or self::OBJBLOCK][.//SINGLE_LINE_COMMENT
+                      or .//BLOCK_COMMENT_BEGIN]"/>
+        </module>
+
+        <!-- Checks that there are no extra spaces around the square brackets ([ and ]) of arrays -->
+        <module name="ArrayBracketNoWhitespace"/>
+
+        <!-- Forbids the use of two or more spaces between words, operators and symbols in the code. -->
+        <module name="SingleSpaceSeparator"/>
+
+        <!-- Forbids the use of multiple commands separated by semicolons on the same line -->
+        <module name="OneStatementPerLine">
+            <property name="treatTryResourcesAsStatement" value="true"/>
+        </module>
+
+        <!-- Forbids declaring multiple variables on a single line, requiring a separate declaration for each one -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- Verifies that the brackets for arrays are placed next to the data type (String[] args). -->
+        <module name="ArrayTypeStyle"/>
+
+        <!-- Checks that every line of a multi-line Javadoc comment contains a leading asterisk (*) -->
+        <module name="JavadocMissingLeadingAsterisk"/>
+
+        <!-- Checks the horizontal alignment of leading asterisks (*) within a multi-line Javadoc comment -->
+        <module name="JavadocLeadingAsteriskAlign"/>
+
+        <!-- Verifies that the description text (the first sentence) begins on the line following "/**" -->
+        <module name="JavadocContentLocation"/>
+
+        <!-- Checks that the letter 'L' is appended to the end of a numeric literal for a long/Long (example, 100L instead of 100l) -->
+        <module name="UpperEll"/>
+
+        <!-- Ensures that for multi-line literals (""" ... """):
+        1. The opening triple quotes (""") must be on the same line where the variable is declared or the argument is passed,
+        while the text itself must begin strictly on the following line
+        2. The closing triple quotes (""") must be placed on a separate line,
+        and their indentation determines the left boundary (base offset) for the entire text block
+        3. The module checks that there are no stray trailing spaces on empty lines within the text block
+        and that the indentation of lines inside the block is consistent with the position of the closing quotes -->
+        <module name="TextBlockGoogleStyleFormatting"/>
+
+        <!-- Checks for unnecessary empty lines, and the presence of empty lines between distinct logical blocks of code (example, static imports) -->
+        <module name="EmptyLineSeparator">
+            <property name="tokens"
+                      value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT,
+                      INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+        </module>
+
+        <!-- Specifies how code should be wrapped to a new line when a line is too long:
+        1. A dot (.) — on the new line
+        2. A comma (,) — on the current (previous) line
+        3. "..." for varargs and "[]" for arrays — on the current (previous) line
+        4. A method reference — on the new line -->
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapDot"/>
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapComma"/>
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapEllipsis"/>
+            <property name="tokens" value="ELLIPSIS"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapArrayDeclarator"/>
+            <property name="tokens" value="ARRAY_DECLARATOR"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapMethodRef"/>
+            <property name="tokens" value="METHOD_REF"/>
+            <property name="option" value="nl"/>
+        </module>
+
+        <!-- Checks that package names consist only lowercase Latin letters and digits, separated by dots -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+            <message key="name.invalidPattern"
+                     value="Package name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that the names of Classes, Interfaces, Enums, Annotations, Records are written in CamelCase -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*(?:[0-9](?:_[0-9]+)*)?$"/>
+            <property name="tokens" value="CLASS_DEF"/>
+            <message key="name.invalidPattern"
+                     value="Type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="TypeName">
+            <property name="tokens" value="INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, RECORD_DEF"/>
+            <message key="name.invalidPattern"
+                     value="Type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all class fields are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="GoogleNonConstantFieldName"/>
+
+        <!-- Checks that all static class fields are named in SNAKE_CASE and do not contain forbidden characters or underscores -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+
+        <!-- Checks that all methods parameters are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all lambda parameters are named in camelCase (or _ for NonUse) and do not contain forbidden characters or underscores -->
+        <module name="LambdaParameterName">
+            <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+            <message key="name.invalidPattern"
+                     value="Lambda parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all parameters in catch-blocks are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="CatchParameterName">
+            <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+            <message key="name.invalidPattern"
+                     value="Catch parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all record parameters are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="RecordComponentName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Record component name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all local variables are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="LocalVariableName">
+            <property name="format"
+                      value="^(_|[a-z](?=[a-z0-9]|$)(?:[a-zA-Z]|[0-9]+(?:_[0-9]+)*)*)$"/>
+            <message key="name.invalidPattern"
+                     value="Local variable name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all local final variables are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="LocalFinalVariableName">
+            <property name="format"
+                      value="^(_|[a-z](?=[a-z0-9]|$)(?:[a-zA-Z]|[0-9]+(?:_[0-9]+)*)*)$"/>
+            <property name="tokens" value="VARIABLE_DEF, PARAMETER_DEF, RESOURCE"/>
+            <message key="name.invalidPattern"
+                     value="Local final variable name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that all temporary variables created after a pattern match or an `instanceof` check
+         are named in camelCase and do not contain forbidden characters or underscores -->
+        <module name="PatternVariableName">
+            <property name="format" value="^(_|[a-z]([a-z0-9][a-zA-Z0-9]*)?)$"/>
+            <message key="name.invalidPattern"
+                     value="Pattern variable name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Controls the naming conventions for type parameters in generics -->
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?$)|(^[A-Z]T$)|(^([A-Z][a-z0-9]+)+T$)"/>
+            <message key="name.invalidPattern"
+                     value="Class type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="RecordTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?$)|(^[A-Z]T$)|(^([A-Z][a-z0-9]+)+T$)"/>
+            <message key="name.invalidPattern"
+                     value="Record type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?$)|(^[A-Z]T$)|(^([A-Z][a-z0-9]+)+T$)"/>
+            <message key="name.invalidPattern"
+                     value="Method type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="InterfaceTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?$)|(^[A-Z]T$)|(^([A-Z][a-z0-9]+)+T$)"/>
+            <message key="name.invalidPattern"
+                     value="Interface type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- Checks that there are no extra or missing spaces inside or around the angle brackets "<>" of generics -->
+        <module name="GenericWhitespace">
+            <message key="ws.followed"
+                     value="GenericWhitespace ''{0}'' is followed by whitespace."/>
+            <message key="ws.preceded"
+                     value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
+            <message key="ws.illegalFollow"
+                     value="GenericWhitespace ''{0}'' should followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
+        </module>
+
+        <!-- Forbids on using the `finalize()` method -->
+        <module name="NoFinalizer"/>
+
+        <!-- Forbids on using the `clone()` or SuperClone -->
+        <module name="NoClone"/>
+
+        <!-- Checks the correctness of indentation (spaces) throughout the entire project -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="2"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+            <property name="arrayInitIndent" value="2"/>
+        </module>
+
+        <!-- Forbids capslock naming in project - the correct way is only camelCase! -->
+        <module name="AbbreviationAsWordInName">
+            <property name="ignoreFinal" value="false"/>
+            <property name="allowedAbbreviationLength" value="0"/>
+            <property name="tokens"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF, PARAMETER_DEF,
+                      VARIABLE_DEF, METHOD_DEF, PATTERN_VARIABLE_DEF, RECORD_DEF, RECORD_COMPONENT_DEF"/>
+        </module>
+
+        <!-- Checks that all methods with the same name (but different signatures) are located one after another -->
+        <module name="OverloadMethodsDeclarationOrder"/>
+
+        <!-- Checks that all Constructors are located one after another -->
+        <module name="ConstructorsDeclarationGrouping"/>
+
+        <!-- Measures the number of lines of code between the declaration of a local variable and
+        the line where that variable is first used within the method's logic.
+        If this distance exceeds a specified limit (the default is 3 lines), Checkstyle reports an error -->
+        <module name="VariableDeclarationUsageDistance"/>
+
+        <!-- Checks that no whitespace appears between the name of a method (or constructor) and the opening parenthesis "(" -->
+        <module name="MethodParamPad">
+            <property name="tokens"
+                      value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, CTOR_CALL, SUPER_CTOR_CALL,
+                      ENUM_CONSTANT_DEF, RECORD_DEF, RECORD_PATTERN_DEF"/>
+        </module>
+
+        <!-- Checks that no whitespace appears before "." "," ";" ":" "++" "'-'-" "::" "..." -->
+        <module name="NoWhitespaceBefore">
+            <property name="tokens"
+                      value="COMMA, SEMI, POST_INC, POST_DEC, DOT, LABELED_STAT, METHOD_REF, ELLIPSIS"/>
+            <property name="allowLineBreaks" value="true"/>
+        </module>
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="NoWhitespaceBefore"/>
+            <property name="query"
+                      value="//ELLIPSIS[preceding-sibling::TYPE/ANNOTATIONS[ANNOTATION[LPAREN]
+                      or not(following-sibling::*)]]"/>
+        </module>
+
+        <!-- Forbids extra spaces immediately after "(" or before ")" -->
+        <module name="ParenPad">
+            <property name="tokens"
+                      value="ANNOTATION, ANNOTATION_FIELD_DEF, CTOR_CALL, CTOR_DEF, DOT, ENUM_CONSTANT_DEF, EXPR,
+                      LITERAL_CATCH, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_NEW, LITERAL_SWITCH,
+                      LITERAL_SYNCHRONIZED, LITERAL_WHILE, METHOD_CALL, METHOD_DEF, QUESTION, RESOURCE_SPECIFICATION,
+                      SUPER_CTOR_CALL, LAMBDA, RECORD_DEF, RECORD_PATTERN_DEF"/>
+        </module>
+
+        <!-- Checks that when line breaks occur, operators such as +, -, *, /, &&, ||, ==, ?, ::, etc., are moved to the new line -->
+        <module name="OperatorWrap">
+            <property name="id" value="OperatorWrapNL"/>
+            <property name="option" value="NL"/>
+            <property name="tokens"
+                      value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS,
+                      MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF, TYPE_EXTENSION_AND "/>
+        </module>
+
+        <!-- Verifies in lambda expressions, that lambda arrow "->" remains at the end of the current line,
+        while the lambda body is moved to a new line -->
+        <module name="OperatorWrap">
+            <property name="id" value="OperatorWrapEOL"/>
+            <property name="option" value="EOL"/>
+            <property name="tokens" value="LAMBDA"/>
+        </module>
+
+        <!-- Forbids placing any annotations on the same line as a Class, Interface, or Package declaration -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationTypeAndPackageAndMembers"/>
+            <property name="tokens"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, RECORD_DEF, ANNOTATION_DEF, PACKAGE_DEF,
+                      ENUM_CONSTANT_DEF, ANNOTATION_FIELD_DEF, MODULE_DEF"/>
+            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+        </module>
+
+        <!-- Forbids placing any annotations on the same line as methods and constructors -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationMethodsAndCtors"/>
+            <property name="tokens"
+                      value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+
+        <!-- Checks the correct annotation's placing on the variables -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationVariables"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+            <property name="allowSamelineMultipleAnnotations" value="true"/>
+        </module>
+
+        <!-- Requires the presence of an @Override annotation on any explicitly written field accessors within records -->
+        <module name="MissingOverrideOnRecordAccessor"/>
+
+        <!-- Checks the presence of a text description after Javadoc tags (such as @param, @return, @throws, @deprecated, etc.) -->
+        <module name="NonEmptyAtclauseDescription"/>
+
+        <!-- Verifies that Javadoc is placed strictly above classes, interfaces, enums, records, methods, constructors, or class fields -->
+        <module name="InvalidJavadocPosition"/>
+
+        <!-- Checks for correct linebreak in a text description after Javadoc tags (such as @param, @return, @throws, @deprecated, etc.)
+        4 additional spaces from the beginning of the line containing the tag when wrapping to a new line -->
+        <module name="JavadocTagContinuationIndentation"/>
+
+        <!-- Checks that the first sentence of a Javadoc comment should begin with a capital letter
+        and must not contain boilerplate phrases or tautologies (for example, "This method returns...") -->
+        <module name="SummaryJavadoc">
+            <property name="forbiddenSummaryFragments"
+                      value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )|^[a-z]"/>
+        </module>
+
+        <!-- Checks that the `<p>` tag is used to create a new paragraph in Javadoc -->
+        <module name="JavadocParagraph">
+            <property name="allowNewlineParagraph" value="false"/>
+        </module>
+
+        <!-- Checks for the presence of a required empty line before a group of block tags in Javadoc (such as @param, @return, @throws, @deprecated, etc.) -->
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+
+        <!-- Checks for the order of block tags in Javadoc (@param -> @return -> @throws -> @deprecated) -->
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
+            <property name="target"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF,
+                      RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+
+        <!-- However, including @param and @return tags is not mandatory.
+        Furthermore, methods annotated with @Override or @Test are entirely exempt from the Javadoc requirement -->
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public, protected"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+
+        <!-- Checks for the presence of Javadoc for methods and constructors (public/protected) -->
+        <!--        <module name="MissingJavadocMethod">-->
+        <!--            <property name="scope" value="protected"/>-->
+        <!--            <property name="allowMissingPropertyJavadoc" value="true"/>-->
+        <!--            <property name="allowedAnnotations" value="Override, Test"/>-->
+        <!--            <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF,-->
+        <!--                                   COMPACT_CTOR_DEF"/>-->
+        <!--        </module>-->
+        <!--        <module name="SuppressionXpathSingleFilter">-->
+        <!--            <property name="checks" value="MissingJavadocMethod"/>-->
+        <!--            <property name="query" value="//*[self::METHOD_DEF or self::CTOR_DEF-->
+        <!--                                 or self::ANNOTATION_FIELD_DEF or self::COMPACT_CTOR_DEF]-->
+        <!--                                 [ancestor::*[self::INTERFACE_DEF or self::CLASS_DEF-->
+        <!--                                 or self::RECORD_DEF or self::ENUM_DEF]-->
+        <!--                                 [not(./MODIFIERS/LITERAL_PUBLIC)]]"/>-->
+        <!--        </module>-->
+
+        <!-- Checks for the presence of Javadoc for classes, interfaces, enums, records -->
+        <!--        <module name="MissingJavadocType">-->
+        <!--            <property name="scope" value="protected"/>-->
+        <!--            <property name="tokens"-->
+        <!--                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,-->
+        <!--                      RECORD_DEF, ANNOTATION_DEF"/>-->
+        <!--            <property name="excludeScope" value="nothing"/>-->
+        <!--        </module>-->
+
+        <!--Checks that a Javadoc consisting of a single short phrase, which fits entirely on one line, is written on a single line -->
+        <module name="SingleLineJavadoc"/>
+
+        <!-- Checks that the names of methods are written in CamelCase.
+        For unit tests, the rule is relaxed via a filter, allowing the use of underscores. -->
+        <module name="GoogleMethodName"/>
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="MethodName"/>
+            <property name="query" value="//METHOD_DEF[./MODIFIERS/ANNOTATION//IDENT[contains(@text, 'Test')]]/IDENT"/>
+            <property name="message" value="'[a-z][a-z0-9][a-zA-Z0-9]*(?:_[a-z][a-z0-9][a-zA-Z0-9]*)*'"/>
+        </module>
+
+        <!-- Verifies that any mentions in comments follow the "TODO:" pattern strictly -->
+        <module name="TodoComment">
+            <property name="id" value="TodoFormat"/>
+            <property name="format" value="^[ \t]*(?!TODO:)(?i:TODO)\b:?"/>
+            <message key="todo.match"
+                     value="''TODO:'' must be written in all caps and followed by a colon."/>
+        </module>
+
+        <!-- Forbids from drawing pseudo-graphic borders, separator lines, and "headers" for code blocks -->
+        <module name="TodoComment">
+            <property name="id" value="BoxComments"/>
+            <property name="format" value="^[ \t]*([*=#])\1{8,}[ \t]*$"/>
+            <message key="todo.match"
+                     value="Comment uses box-like repetitive character pattern."/>
+        </module>
+
+        <!-- Forbids leaving a catch block completely empty -->
+        <module name="EmptyCatchBlock">
+            <property name="commentFormat" value="\w+"/>
+        </module>
+
+        <!-- Checks that comments (single-line "//" and multi-line "/* ... */") are neatly aligned at the same indentation level as the code to which they relate -->
+        <module name="CommentsIndentation">
+            <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
+        </module>
+
+        <!-- Requires that each line in a multi-line block comment (/* ... */)
+        begins with a leading asterisk (*), similar to the convention used in Javadoc -->
+        <module name="MultilineCommentLeadingAsteriskPresence"/>
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="MultilineCommentLeadingAsteriskPresence"/>
+            <property name="query"
+                      value="//BLOCK_COMMENT_BEGIN[preceding-sibling::RPAREN and following-sibling::SEMI]"/>
+        </module>
+
+        <!-- Imports an external XML file (checkstyle-xpath-suppressions.xml)
+        where you can define targeted exceptions for any project rules, without cluttering the main configuration file -->
+        <module name="SuppressionXpathFilter">
+            <property name="file" value="${org.checkstyle.google.suppressionxpathfilter.config}"
+                      default="checkstyle-xpath-suppressions.xml"/>
+            <property name="optional" value="true"/>
+        </module>
+
+        <!-- Enables support for @SuppressWarnings annotations in Java code for Checkstyle rules -->
+        <module name="SuppressWarningsHolder"/>
+
+        <!-- Allows to disable specific Checkstyle rules for a particular section of code,
+        using standard comments directly within the body of your class
+        // CHECKSTYLE.OFF: MethodName
+        // CHECKSTYLE.ON: MethodName -->
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+            <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
+        </module>
+
+        <!-- Allows you to temporarily disable a specific Checkstyle rule for exactly the next line of code by using the comment
+        // CHECKSTYLE.SUPPRESS: RuleName -->
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="CHECKSTYLE.SUPPRESS\: ([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
+            <property name="influenceFormat" value="1"/>
+        </module>
+    </module>
+</module>

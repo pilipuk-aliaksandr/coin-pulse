@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: "create_prices_table"
+      author: "shurapilipuk@gmail.com"
+      comments: "Prices table for storing periodic Binance ticker data"
+      changes:
+        - createTable:
+            tableName: prices
+            schemaName: coins
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_market_prices_id
+              - column:
+                  name: symbol
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: NUMERIC(19, 8)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fetched_at
+                  type: TIMESTAMP WITHOUT TIMEZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITHOUT TIMEZONE
+                  constraints:
+                    nullable: false

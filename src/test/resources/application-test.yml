@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        type:
+          json_format_mapper: jackson
+  liquibase:
+    enabled: false
+
+binance:
+  base-url: ${wiremock.server.baseUrl}
+  symbols: BNBUSDT
+  poll-interval: PT1M
+  connect-timeout: PT3S
+  read-timeout: PT5S
+  rate-limit-backoff: PT1M

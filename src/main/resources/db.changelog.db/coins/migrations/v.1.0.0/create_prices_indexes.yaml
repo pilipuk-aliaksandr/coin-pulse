@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: "create_prices_indexes"
+      author: "shurapilipuk@gmail.com"
+      comments: "Create composite index on symbol and fetched_at for fast time-range queries"
+      changes:
+        - createIndex:
+            tableName: prices
+            schemaName: coins
+            indexName: idx_prices_symbol_fetched_at
+            columns:
+              - column:
+                  name: symbol
+              - column:
+                  name: fetched_at

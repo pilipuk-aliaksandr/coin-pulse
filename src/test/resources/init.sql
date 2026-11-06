@@ -1,0 +1,9 @@
+CREATE SCHEMA IF NOT EXISTS coins;
+
+CREATE TABLE IF NOT EXISTS coins.prices (
+    id          BIGSERIAL PRIMARY KEY,
+    symbol      VARCHAR(20)  NOT NULL,
+    price       NUMERIC(19, 8) NOT NULL,
+    fetched_at  TIMESTAMP    NOT NULL,
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

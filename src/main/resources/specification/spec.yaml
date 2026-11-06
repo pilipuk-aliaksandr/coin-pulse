@@ -1,0 +1,277 @@
+openapi: 3.1.0
+info:
+  title: CoinPulse Price Tracking API
+  description: |-
+    Service for tracking, storing, and analyzing Binance cryptocurrency price history 
+    via scheduled fetching and exposing data through a REST API.
+  version: 1.0.0
+  contact:
+    name: Alexander Pilipuk
+    email: shurapilipuk@gmail.com
+servers:
+  - url: 'http://localhost:8080'
+
+paths:
+  /api/v1/prices/latest:
+    get:
+      tags:
+        - Prices
+      summary: Get the latest saved price record
+      description: Returns the most recent price entry fetched from the Binance API.
+      operationId: getLatestPrice
+      parameters:
+        - name: symbol
+          in: query
+          description: Trading pair symbol
+          required: false
+          schema:
+            type: string
+            default: "BNBUSDT"
+            example: "BNBUSDT"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceDto'
+        '404':
+          description: No price records found
+
+  /api/v1/prices/average:
+    get:
+      tags:
+        - Prices
+      summary: Get average price over a time period
+      description: Calculates and returns the average price for the specified trading pair between [from, to].
+      operationId: getAveragePrice
+      parameters:
+        - name: from
+          in: query
+          description: Start timestamp in ISO-8601 format
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2026-11-06T14:00:23.961245+03:00"
+        - name: to
+          in: query
+          description: End timestamp in ISO-8601 format
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2026-11-06T14:00:23.961245+03:00"
+        - name: symbol
+          in: query
+          description: Trading pair symbol
+          required: false
+          schema:
+            type: string
+            default: "BNBUSDT"
+            example: "BNBUSDT"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AveragePriceDto'
+        '400':
+          description: Invalid request parameters or time period
+        '404':
+          description: No price records found in the requested period
+
+  /api/v1/prices:
+    get:
+      tags:
+        - Prices
+      summary: Get paginated price records in a time range
+      description: Retrieves a paginated list of price records saved within the [from, to] interval.
+      operationId: getPricesPage
+      parameters:
+        - name: from
+          in: query
+          description: Start timestamp in ISO-8601 format
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2026-11-06T14:00:23.961245+03:00"
+        - name: to
+          in: query
+          description: End timestamp in ISO-8601 format
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2026-11-06T14:00:23.961245+03:00"
+        - name: symbol
+          in: query
+          description: Trading pair symbol
+          required: false
+          schema:
+            type: string
+            default: "BNBUSDT"
+            example: "BNBUSDT"
+        - name: page
+          in: query
+          description: Page number (0-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+            example: 20
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricePageResponseDto'
+        '400':
+          description: Invalid request parameters or time period
+
+  /api/v1/prices/trend:
+    get:
+      tags:
+        - Prices
+      summary: Calculate price trend
+      description: Computes the market trend (UPWARD, DOWNWARD, FLAT) for the trading pair over the given period.
+      operationId: getPriceTrend
+      parameters:
+        - name: from
+          in: query
+          description: Start timestamp in ISO-8601 format
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2026-11-06T14:00:23.961245+03:00"
+        - name: to
+          in: query
+          description: End timestamp in ISO-8601 format
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: "2026-11-06T14:00:23.961245+03:00"
+        - name: symbol
+          in: query
+          description: Trading pair symbol
+          required: false
+          schema:
+            type: string
+            default: "BNBUSDT"
+            example: "BNBUSDT"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrendResponseDto'
+        '400':
+          description: Invalid request parameters or time period
+        '404':
+          description: No price records found in the requested period
+
+
+components:
+  schemas:
+
+    PriceDto:
+      type: object
+      required:
+        - symbol
+        - price
+        - fetchedAt
+      properties:
+        symbol:
+          type: string
+          description: Trading pair symbol
+          example: "BNBUSDT"
+        price:
+          type: string
+          description: Price value as string to preserve precision (BigDecimal)
+          example: "61234.56780000"
+        fetchedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the price was fetched from Binance in UTC (ISO-8601)
+          example: "2026-09-15T10:30:00Z"
+
+    AveragePriceDto:
+      type: object
+      required:
+        - averagePrice
+      properties:
+        averagePrice:
+          type: string
+          description: Calculated average price over the requested period
+          example: "61234.56780000"
+
+    PricePageResponseDto:
+      type: object
+      required:
+        - items
+        - page
+        - size
+        - totalElements
+        - hasNext
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceDto'
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 20
+        totalElements:
+          type: integer
+          format: int64
+          example: 135
+        hasNext:
+          type: boolean
+          example: true
+
+    TrendResponseDto:
+      type: object
+      required:
+        - symbol
+        - start_date
+        - end_date
+        - trend
+      properties:
+        symbol:
+          type: string
+          example: "BNBUSDT"
+        start_date:
+          type: string
+          format: date-time
+          example: "2026-09-01"
+        end_date:
+          type: string
+          format: date-time
+          example: "2026-09-30"
+        trend:
+          type: string
+          enum:
+            - UPWARD
+            - DOWNWARD
+            - FLAT
+          example: "UPWARD"
