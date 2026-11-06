@@ -1,6 +1,6 @@
-# 📡 CoinPulse
+# ₿ CoinPulse
 
-> Сервис для отслеживания и анализа исторических цен криптовалют с Binance
+Сервис для отслеживания и анализа исторических цен криптовалют с Binance
 
 Сервис автоматически собирает средние цены торговых пар с биржи Binance, сохраняет их в PostgreSQL и предоставляет доступ через REST API. 
 
@@ -10,10 +10,6 @@
 
 ## 🚀 Быстрый старт
 
-### Требования
-
-- **Docker** и **Docker Compose** (v2)
-
 ### Запуск одной командой
 
 ```bash
@@ -22,8 +18,9 @@ docker compose up --build
 
 Это поднимет всё необходимое: PostgreSQL, применит миграции БД и запустит приложение.
 
-> Приложение будет доступно на `http://localhost:8080`
-> Swagger UI: `http://localhost:8080/swagger-ui.html`
+Приложение будет доступно на `http://localhost:8080`
+
+Документация Swagger UI: `http://localhost:8080/swagger-ui.html`
 
 ### Пошаговый запуск
 
@@ -31,27 +28,42 @@ docker compose up --build
 # 1. Собрать образ и поднять все сервисы
 docker compose up --build
 
-# 2. Проверить статус
-docker compose ps
-
-# 3. Посмотреть логи приложения
-docker compose logs -f app
-
-# 4. Остановить всё
+# 2. Остановить всё
 docker compose down
 
-# 5. Остановить + удалить volumes (сброс БД)
+# 3. Остановить + удалить volumes (сброс БД)
 docker compose down -v
 ```
 
 ### Локальная разработка (без Docker)
 
 ```bash
-# Запустить PostgreSQL отдельно
-docker compose up postgres liquibase
+# 1. Запустить PostgreSQL и програть Liquibase миграции
+docker compose up -d postgres liquibase
 
-# В другом терминале — приложение
+> Дождись, пока Liquibase завершит миграции. PostgreSQL продолжит работать.
+
+# 2. Установить переменные окружения в терминале, где будет запущено приложение (для примера PowerShell):
+\```powershell
+$env:SPRING_DATASOURCE_URL = "jdbc:postgresql://localhost:5432/coin_pulse"
+$env:SPRING_DATASOURCE_USERNAME = "postgres"
+$env:SPRING_DATASOURCE_PASSWORD = "postgres"
+
+$env:BINANCE_BASE_URL = "https://api.binance.com"
+$env:BINANCE_SYMBOLS = "BNBUSDT,BTCUSDT,ETHUSDT"
+$env:BINANCE_POLL_INTERVAL = "PT30S"
+\```
+
+# 3. Запустить приложение
 ./gradlew bootRun
+
+# 4. Остановить приложение
+В терминале, где запущен bootRun, нажать Ctrl + C.
+
+# 5. Остановить PostgreSQL
+\```powershell
+docker compose down
+\```
 ```
 
 ---
