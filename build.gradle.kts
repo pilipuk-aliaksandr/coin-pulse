@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.open.api.generator)
     checkstyle
     pmd
+    alias(libs.plugins.spotbugs)
 }
 
 extra["httpclient5.version"] = "5.6.5"
@@ -42,6 +43,10 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${libs.versions.springdoc.get()}")
+
+    spotbugs("com.github.spotbugs:spotbugs:${libs.versions.spotbugs.get()}")
+    testCompileOnly("com.github.spotbugs:spotbugs-annotations:${libs.versions.spotbugs.get()}")
+    spotbugs("org.apache.commons:commons-lang3:${libs.versions.commonsLang3.get()}")
 
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -113,8 +118,25 @@ tasks.withType<Pmd>().configureEach {
     }
 }
 
+spotbugs {
+    ignoreFailures = false
+
+    // Максимальный объём памяти для анализа
+    maxHeapSize = "1g"
+
+    excludeFilter = file("config/spotbugs/exclude.xml")
+}
+
+tasks.spotbugsMain {
+    reports.create("html") {
+        required.set(true)
+        outputLocation.set(layout.buildDirectory.file("reports/spotbugs/spotbugs.html"))
+        setStylesheet("fancy-hist.xsl")
+    }
+}
+
 tasks.named("test") {
-    dependsOn("checkstyleMain", "checkstyleTest", "pmdMain", "pmdTest")
+    dependsOn("checkstyleMain", "checkstyleTest", "pmdMain", "pmdTest", "spotbugsMain", "spotbugsTest")
 }
 
 tasks.bootJar {

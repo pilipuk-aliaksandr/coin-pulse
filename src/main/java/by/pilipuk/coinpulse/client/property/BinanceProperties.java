@@ -29,4 +29,12 @@ public record BinanceProperties(
         @NotNull Duration readTimeout,
         @NotNull Duration rateLimitBackoff
 ) {
+    public BinanceProperties {
+        symbols = symbols == null ? List.of() : List.copyOf(symbols);
+    }
+
+    @Override
+    public List<String> symbols() {
+        return List.copyOf(symbols);
+    }
 }

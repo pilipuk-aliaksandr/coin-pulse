@@ -1,5 +1,6 @@
 package by.pilipuk.coinpulse.environment;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +11,14 @@ import java.util.List;
 public class TruncateDbTablesTestService {
 
     public static final List<String> TABLES_NAMES = List.of("coins.prices");
-    public static final String TRUNCATE_TABLES =
-            """
-                    TRUNCATE TABLE %s RESTART IDENTITY CASCADE;
-            """;
+    public static final String TRUNCATE_TABLES = "TRUNCATE TABLE %s RESTART IDENTITY CASCADE;";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    @SuppressFBWarnings(
+            value = "EI_EXPOSE_REP2",
+            justification = "NamedParameterJdbcTemplate is an injected Spring-managed dependency."
+    )
     public TruncateDbTablesTestService(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
