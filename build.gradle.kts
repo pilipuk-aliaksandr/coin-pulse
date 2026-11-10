@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.dependency.management)
     alias(libs.plugins.open.api.generator)
     checkstyle
+    pmd
 }
 
 extra["httpclient5.version"] = "5.6.5"
@@ -93,8 +94,27 @@ checkstyle {
     toolVersion = libs.versions.checkstyle.get()
 }
 
+pmd {
+    toolVersion = libs.versions.pmd.get()
+
+    isConsoleOutput = true
+    isIgnoreFailures = false
+
+    ruleSets = emptyList()
+    ruleSetFiles = files("config/pmd/pmd.xml")
+}
+
+tasks.withType<Pmd>().configureEach {
+    // Исключаем сгенерированный OpenAPI код из проверок
+    exclude { element ->
+        element.file.toPath().startsWith(
+            layout.buildDirectory.dir("generated/src/main/java").get().asFile.toPath()
+        )
+    }
+}
+
 tasks.named("test") {
-    dependsOn("checkstyleMain", "checkstyleTest")
+    dependsOn("checkstyleMain", "checkstyleTest", "pmdMain", "pmdTest")
 }
 
 tasks.bootJar {

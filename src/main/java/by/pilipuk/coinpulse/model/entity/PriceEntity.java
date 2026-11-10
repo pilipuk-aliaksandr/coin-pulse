@@ -27,7 +27,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class Price {
+public class PriceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,12 +52,12 @@ public class Price {
             return false;
         }
 
-        Price price1 = (Price) o;
-        return Objects.equals(id, price1.id)
-                && Objects.equals(symbol, price1.symbol)
-                && Objects.equals(price, price1.price)
-                && Objects.equals(fetchedAt, price1.fetchedAt)
-                && Objects.equals(createdAt, price1.createdAt);
+        PriceEntity priceEntity1 = (PriceEntity) o;
+        return Objects.equals(id, priceEntity1.id)
+                && Objects.equals(symbol, priceEntity1.symbol)
+                && Objects.equals(price, priceEntity1.price)
+                && Objects.equals(fetchedAt, priceEntity1.fetchedAt)
+                && Objects.equals(createdAt, priceEntity1.createdAt);
     }
 
     @Override

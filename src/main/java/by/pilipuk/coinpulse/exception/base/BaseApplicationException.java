@@ -5,15 +5,20 @@ import lombok.Getter;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serial;
+
 import static java.util.Optional.ofNullable;
 
 @Getter
 public abstract class BaseApplicationException extends RuntimeException {
+
     private final String code;
     private final HttpStatus httpStatus;
     private final Level logLevel;
     private final ExceptionDto.ExceptionContext exceptionContext;
 
+    @Serial
+    private static final long serialVersionUID = -6492338621056190463L;
     private static final String PARAMETRIZED_MESSAGE = "Code: %s, params: [%s]";
     private static final String MESSAGE = "Code: %s";
 

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -33,6 +34,7 @@ import static by.pilipuk.coinpulse.client.exception.BinanceIntegrationExceptionC
 public class BinanceClient {
 
     private static final String AVG_PRICE_URI = "/api/v3/avgPrice?symbol={symbol}";
+    private static final String SYMBOL_LITERAL = "symbol";
     private static final int INVALID_SYMBOL_CODE = -1121;
 
     private final RestClient binanceRestClient;
@@ -53,7 +55,7 @@ public class BinanceClient {
             throw BinanceIntegrationException.create(
                     BINANCE_REQUEST_CONNECTION_FAILED,
                     Map.of(
-                            "symbol", symbol,
+                            SYMBOL_LITERAL, symbol,
                             "reason", String.valueOf(exception.getMessage())
                     ),
                     exception
@@ -62,7 +64,7 @@ public class BinanceClient {
             throw BinanceIntegrationException.create(
                     BINANCE_RESPONSE_ERROR,
                     Map.of(
-                            "symbol", symbol,
+                            SYMBOL_LITERAL, symbol,
                             "reason", String.valueOf(exception.getMessage())
                     ),
                     exception
@@ -74,7 +76,7 @@ public class BinanceClient {
         if (response == null || response.price() == null || response.price().signum() <= 0) {
             throw BinanceIntegrationException.create(
                     BINANCE_INVALID_PRICE,
-                    Map.of("symbol", symbol, "response", String.valueOf(response))
+                    Map.of(SYMBOL_LITERAL, symbol, "response", String.valueOf(response))
             );
         }
 
@@ -91,7 +93,7 @@ public class BinanceClient {
             return BinanceIntegrationException.create(
                     BINANCE_RATE_LIMIT,
                     Map.of(
-                            "symbol", symbol,
+                            SYMBOL_LITERAL, symbol,
                             "httpStatus", status,
                             BinanceIntegrationException.RETRY_AFTER_SECONDS,
                             resolveRetryAfter(exception.getResponseHeaders()).toSeconds()
@@ -106,7 +108,7 @@ public class BinanceClient {
             return BinanceIntegrationException.create(
                     BINANCE_INVALID_SYMBOL,
                     Map.of(
-                            "symbol", symbol,
+                            SYMBOL_LITERAL, symbol,
                             "httpStatus", status,
                             "responseBody", responseBody
                     ),
@@ -117,7 +119,7 @@ public class BinanceClient {
         return BinanceIntegrationException.create(
                 BINANCE_HTTP_ERROR,
                 Map.of(
-                        "symbol", symbol,
+                        SYMBOL_LITERAL, symbol,
                         "httpStatus", status,
                         "responseBody", responseBody
                 ),
@@ -135,7 +137,7 @@ public class BinanceClient {
         }
     }
 
-    private Duration resolveRetryAfter(HttpHeaders headers) {
+    private Duration resolveRetryAfter(MultiValueMap<String, String> headers) {
         String value = headers == null
                 ? null
                 : headers.getFirst(HttpHeaders.RETRY_AFTER);

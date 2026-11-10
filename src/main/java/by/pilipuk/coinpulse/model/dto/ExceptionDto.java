@@ -31,7 +31,7 @@ public class ExceptionDto {
     @NoArgsConstructor
     @Accessors(chain = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonPropertyOrder(value = {"code", "field", "message", "object", "parameters"})
+    @JsonPropertyOrder({"code", "field", "message", "object", "parameters"})
     public static class ExceptionContext {
 
         private String code;

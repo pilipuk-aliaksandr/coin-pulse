@@ -1,6 +1,6 @@
 package by.pilipuk.coinpulse.mapper;
 
-import by.pilipuk.coinpulse.model.entity.Price;
+import by.pilipuk.coinpulse.model.entity.PriceEntity;
 import by.pilipuk.coinpulse.model.enums.Trend;
 import by.pilipuk.dto.AveragePriceDto;
 import by.pilipuk.dto.PriceDto;
@@ -23,15 +23,15 @@ public interface PriceMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "fetchedAt", source = "now")
     @Mapping(target = "createdAt", ignore = true)
-    Price toEntity(String symbol, BigDecimal price, LocalDateTime now);
+    PriceEntity toEntity(String symbol, BigDecimal price, LocalDateTime now);
 
     @Mapping(target = "price", qualifiedByName = "toPlainString")
-    PriceDto toPriceDto(Price price);
+    PriceDto toPriceDto(PriceEntity priceEntity);
 
     @Mapping(target = "averagePrice", qualifiedByName = "toPlainString")
     AveragePriceDto toAveragePriceDto(BigDecimal averagePrice);
 
-    default PricePageResponseDto toPageDto(Page<Price> page) {
+    default PricePageResponseDto toPageDto(Page<PriceEntity> page) {
 
         return PricePageResponseDto.builder()
                 .items(page.getContent().stream().map(this::toPriceDto).toList())

@@ -5,10 +5,13 @@ import by.pilipuk.coinpulse.model.dto.ExceptionDto;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serial;
 import java.util.Map;
 
-public class ApplicationException extends BaseApplicationException {
+public final class ApplicationException extends BaseApplicationException {
 
+    @Serial
+    private static final long serialVersionUID = 5736399598744972686L;
     private static final String CODE = "COINPULSE_APPLICATION_EXCEPTION";
 
     private ApplicationException(

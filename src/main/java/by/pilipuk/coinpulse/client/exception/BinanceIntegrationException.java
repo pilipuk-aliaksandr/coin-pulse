@@ -5,10 +5,13 @@ import by.pilipuk.coinpulse.model.dto.ExceptionDto;
 import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serial;
 import java.util.Map;
 
-public class BinanceIntegrationException extends BaseApplicationException {
+public final class BinanceIntegrationException extends BaseApplicationException {
 
+    @Serial
+    private static final long serialVersionUID = -7734664628906113996L;
     private static final String CODE = "BINANCE_INTEGRATION_EXCEPTION";
     public static final String RETRY_AFTER_SECONDS = "retryAfterSeconds";
 

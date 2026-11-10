@@ -39,3 +39,5 @@ binance:
   connect-timeout: PT3S
   read-timeout: PT5S
   rate-limit-backoff: PT1M
+  scheduler:
+    enabled: true

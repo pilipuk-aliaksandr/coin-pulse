@@ -21,7 +21,8 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
         packagesOf = CoinPulseApp.class,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
-public class CoinPulseArchitectureTest {
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+public final class CoinPulseArchitectureTest {
 
     /**
      * Пакеты не должны образовывать циклические зависимости.
@@ -96,4 +97,7 @@ public class CoinPulseArchitectureTest {
                     .orShould().haveRawType(Double.class)
                     .orShould().haveRawType(float.class)
                     .orShould().haveRawType(Float.class);
+
+    private CoinPulseArchitectureTest() {
+    }
 }

@@ -14,12 +14,18 @@ import java.net.http.HttpClient;
 public class BinanceRestClientConfig {
 
     @Bean
-    public RestClient binanceRestClient(RestClient.Builder builder, BinanceProperties properties) {
-        HttpClient httpClient = HttpClient.newBuilder()
+    public HttpClient binanceHttpClient(BinanceProperties properties) {
+        return HttpClient.newBuilder()
                 .connectTimeout(properties.connectTimeout())
                 .build();
+    }
 
-        JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+    @Bean
+    public RestClient binanceRestClient(
+            RestClient.Builder builder, BinanceProperties properties, HttpClient binanceHttpClient
+    ) {
+        JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(binanceHttpClient);
+
         requestFactory.setReadTimeout(properties.readTimeout());
 
         return builder

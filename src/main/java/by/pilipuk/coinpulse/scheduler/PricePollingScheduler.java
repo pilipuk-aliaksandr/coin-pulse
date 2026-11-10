@@ -5,10 +5,12 @@ import by.pilipuk.coinpulse.client.property.BinanceProperties;
 import by.pilipuk.coinpulse.service.PriceCollectorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import static by.pilipuk.coinpulse.client.exception.BinanceIntegrationException.RETRY_AFTER_SECONDS;
 import static by.pilipuk.coinpulse.client.exception.BinanceIntegrationExceptionCode.BINANCE_RATE_LIMIT;
@@ -21,6 +23,12 @@ import static by.pilipuk.coinpulse.client.exception.BinanceIntegrationExceptionC
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        prefix = "binance.scheduler",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class PricePollingScheduler {
 
     private final PriceCollectorService collector;
@@ -47,7 +55,8 @@ public class PricePollingScheduler {
             return true;
         } catch (BinanceIntegrationException e) {
             if (e.hasCode(BINANCE_RATE_LIMIT)) {
-                long retryAfterSeconds = ((Number) e.getParameter(RETRY_AFTER_SECONDS)).longValue();
+                long retryAfterSeconds = ((Number) Objects.requireNonNull(
+                        e.getParameter(RETRY_AFTER_SECONDS), "retryAfterSeconds is null")).longValue();
 
                 pausedUntil = Instant.now().plusSeconds(retryAfterSeconds);
 

@@ -9,7 +9,8 @@ public enum ApplicationExceptionCode {
     PRICE_NOT_FOUND(HttpStatus.NOT_FOUND, Level.INFO, "symbol"),
     PRICE_NOT_FOUND_IN_PERIOD(HttpStatus.NOT_FOUND, Level.INFO),
     INVALID_PERIOD(HttpStatus.BAD_REQUEST, Level.INFO),
-    FAILED_TO_CONVERT_TO_JSON(HttpStatus.INTERNAL_SERVER_ERROR, Level.INFO);
+    FAILED_JSON_CONVERTATION(HttpStatus.INTERNAL_SERVER_ERROR, Level.INFO),
+    MOCK_MVC_PERFORM_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, Level.ERROR);
 
     private final HttpStatus httpStatus;
     private final Level level;

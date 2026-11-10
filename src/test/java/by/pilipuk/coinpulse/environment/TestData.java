@@ -1,6 +1,6 @@
 package by.pilipuk.coinpulse.environment;
 
-import by.pilipuk.coinpulse.model.entity.Price;
+import by.pilipuk.coinpulse.model.entity.PriceEntity;
 import by.pilipuk.dto.AveragePriceDto;
 import by.pilipuk.dto.PriceDto;
 import by.pilipuk.dto.PricePageResponseDto;
@@ -12,14 +12,30 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-public class PriceTestFactory {
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+public final class TestData {
 
-    private PriceTestFactory() {
+    public static final String FIRST_TEST_PRICE = "50000.00000000";
+    public static final String SECOND_TEST_PRICE = "60000.00000000";
+    public static final String THIRD_TEST_PRICE = "70000.00000000";
+    public static final String FIRST_TEST_DATETIME = "2026-09-01T00:00:00Z";
+    public static final String SECOND_TEST_DATETIME = "2026-09-30T23:59:59Z";
+    public static final String SYMBOL = "BNBUSDT";
+    public static final String SYMBOL_LITERAL = "symbol";
+    public static final String FROM_LITERAL = "from";
+    public static final String PAGE_LITERAL = "page";
+    public static final String SIZE_LITERAL = "size";
+    public static final String TO_LITERAL = "to";
+    public static final String NONEXIST_LITERAL = "NONEXIST";
+    public static final String CONTENT_TYPE_LITERAL = "Content-Type";
+    public static final String CONTENT_TYPE = "application/json";
+
+    private TestData() {
     }
 
-    public static Price createBnbUsdtPrice(String price, LocalDateTime fetchedAt) {
-        return Price.builder()
-                .symbol("BNBUSDT")
+    public static PriceEntity createBnbUsdtPrice(String price, LocalDateTime fetchedAt) {
+        return PriceEntity.builder()
+                .symbol(SYMBOL)
                 .price(new BigDecimal(price))
                 .fetchedAt(fetchedAt)
                 .createdAt(fetchedAt)

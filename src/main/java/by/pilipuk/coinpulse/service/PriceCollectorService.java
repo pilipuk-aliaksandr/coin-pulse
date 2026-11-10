@@ -2,7 +2,7 @@ package by.pilipuk.coinpulse.service;
 
 import by.pilipuk.coinpulse.client.BinanceClient;
 import by.pilipuk.coinpulse.mapper.PriceMapper;
-import by.pilipuk.coinpulse.model.entity.Price;
+import by.pilipuk.coinpulse.model.entity.PriceEntity;
 import by.pilipuk.coinpulse.repository.PriceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class PriceCollectorService {
 
         var price = priceMapper.toEntity(symbol, averagePrice, LocalDateTime.now(ZoneOffset.UTC));
 
-        Price saved = priceRepository.save(price);
+        PriceEntity saved = priceRepository.save(price);
 
         log.info(
                 "Saved {} average price {} (fetchedAt={})",
